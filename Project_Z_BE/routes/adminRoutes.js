@@ -23,5 +23,9 @@ router.get("/prime/users", auth, adminController.getAllUsers);
 
 // Get Users for Normal Admin
 router.get("/sub/users", auth, adminController.getNormalUsers);
+// Route to add a course
+router.post("/addcourse", auth, adminController.addCourse);
 
+// Route to get all courses
+router.get("/courses", auth, adminController.getAllCourses);
 module.exports = router;

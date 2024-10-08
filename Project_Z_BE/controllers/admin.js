@@ -1,8 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-
-
+const Course = require("../models/course"); // Import the Course model
 
 const adminController = {
   // Prime Admin Login
@@ -136,6 +135,38 @@ const adminController = {
     }
   },
 
+  // Add Course, SubCourse, Topic, Test, or Question
+  addCourse: async (req, res) => {
+    // Only prime-admin or admin can add courses
+    if (req.user.role !== "prime-admin" && req.user.role !== "admin") {
+      return res.status(403).send("You do not have permission to add courses.");
+    }
+
+    try {
+      const { title, subCourses } = req.body;
+
+      const newCourse = new Course({
+        title,
+        subCourses, // Array of sub-courses, which contain topics, tests, etc.
+      });
+
+      await newCourse.save();
+      res.status(201).send("Course added successfully!");
+    } catch (error) {
+      res.status(400).send("Error adding course: " + error.message);
+    }
+  },
+
+  // Get All Courses
+  getAllCourses: async (req, res) => {
+    try {
+      const courses = await Course.find();
+      res.json(courses);
+    } catch (error) {
+      res.status(500).send("Error retrieving courses: " + error.message);
+    }
+  },
+
   // Get All Users for Prime Admin
   getAllUsers: async (req, res) => {
     // Prime admin can view all users
@@ -166,4 +197,5 @@ const adminController = {
     }
   },
 };
-module.exports=adminController;
+
+module.exports = adminController;
